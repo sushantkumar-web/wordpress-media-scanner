@@ -5,48 +5,69 @@
 ![License](https://img.shields.io/badge/License-GPLv2-green.svg)
 ![Version](https://img.shields.io/badge/Version-1.2.0-orange.svg)
 
-A lightweight, premium WordPress plugin that helps website owners detect exactly where images are used, identify unused media, and optimize their Media Library safely.
+A production-ready WordPress plugin engineered to accurately detect media usage across complex page builder architectures, custom fields, and standard post content. 
 
-## Why use this plugin?
-Most media cleanup plugins just guess. They look for image URLs in post content and if they don't find them, they flag the image as "Unused." This is dangerous if you use page builders like Elementor.
+## The Problem
+Traditional media cleanup plugins rely on simple string matching within the `post_content` column. When images are embedded via page builders like Elementor, stored in custom fields, or used as featured images, these standard scanners falsely flag the media as "unused." Cleaning up a library based on these false positives results in broken layouts and missing images.
 
-**Sushant Media Scanner is different.** It deeply parses Elementor JSON data, featured images, custom fields, and post content to give you a 100% accurate usage report.
+## The Solution
+Sushant Media Scanner utilizes a deep-parsing, multi-pass architecture. It extracts and cross-references metadata from multiple database tables (`wp_posts`, `wp_postmeta`, `wp_options`) to build an accurate dependency graph for every asset in your library.
 
-## Features
+## Technical Architecture
+The plugin is built using a modular, object-oriented approach adhering to modern PHP standards:
+- `Smscan_Core`: Handles database schema migrations and option management.
+- `Smscan_Scanner`: The parsing engine handling Elementor JSON decoding and relational database queries.
+- `Smscan_Ajax`: Manages batched AJAX endpoints to bypass PHP execution timeouts on large libraries.
+- `Smscan_Admin`: Manages UI rendering, custom media columns, and settings.
+- `Smscan_Telemetry`: Implements opt-in, anonymous telemetry using `wp_remote_post`.
 
-- **Deep Elementor Support:** Scans `_elementor_data` to find images hidden inside page builder layouts.
-- **Premium Dashboard:** A clean, minimalist interface showing your total media, used, and unused counts.
-- **Scan Logs:** Keeps a history of your last 10 scans, showing time taken, items scanned, and unused assets found.
-- **Individual Scanning:** Don't want to scan 5,000 images? Click "Scan Now" on any single image in the Media Library.
-- **CSV Export:** Download a full report of your media usage.
-- **Multi-Usage Detection:** Detects if an image is used in multiple posts, not just the first one.
-- **Privacy First:** Opt-in telemetry to help improve the plugin. Fully anonymous, no personal data, domains, or images are ever collected.
-- **Modular Architecture:** Built with modern PHP standards, separate classes, and clean code for maximum performance.
+## Core Features
+
+- **Elementor Deep-Scan:** Decodes `_elementor_data` JSON recursively to locate attachment IDs embedded within widget configurations.
+- **Multi-Usage Detection:** Accurately captures and displays every instance of an asset across multiple posts, rather than stopping at the first match.
+- **Individual Asset Processing:** Provides a manual "Scan Now" trigger for individual media rows, allowing for instant verification without running a full library sweep.
+- **Batched AJAX Engine:** Processes media in configurable batches (default 50) to ensure stability on shared hosting environments.
+- **Scan Telemetry & Logs:** Maintains an internal log of the last 10 scan executions, detailing execution time and assets processed.
+- **CSV Reporting:** Generates UTF-8 compliant CSV exports of the library's usage status.
+- **WP-Cron Integration:** Supports automated background scans with configurable intervals.
 
 ## Screenshots
 
-### The Dashboard
-![Dashboard](assets/screenshot-1.png)
+### Dashboard & Scan Logs
+![Dashboard](https://ps.w.org/sushant-media-scanner/assets/screenshot-1.png?rev=3486108)
 
 ### Media Library Integration
-![Media Library](assets/screenshot-2.png)
+![Media Library](https://ps.w.org/sushant-media-scanner/assets/screenshot-2.png?rev=3486108)
+
+### Plugin Settings & Configuration
+![Settings](https://ps.w.org/sushant-media-scanner/assets/screenshot-3.png?rev=3486108)
+
+### Individual Asset Scanning
+![Individual Scan](https://ps.w.org/sushant-media-scanner/assets/screenshot-4.png?rev=3486108)
+
+### CSV Export
+![CSV Export](https://ps.w.org/sushant-media-scanner/assets/screenshot-5.png?rev=3486108)
 
 ## Installation
 
-1. Upload the `sushant-media-scanner` folder to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Go to **Media > Scan Media Usage** to run your first scan.
+### From WordPress Admin
+1. Navigate to **Plugins > Add New**.
+2. Search for `Sushant Media Scanner`.
+3. Click **Install** and then **Activate**.
 
-##  Privacy & Telemetry
-By default, this plugin collects **zero data**. 
-If you explicitly opt-in via the plugin settings, it will send an anonymous weekly ping containing:
-- WordPress version
-- PHP version
-- Whether Elementor is active (Yes/No)
-- Total media count
-- Total scanned count
+### Manual Installation
+1. Download the repository as a `.zip` file.
+2. Upload the extracted folder to `/wp-content/plugins/`.
+3. Activate the plugin through the WordPress admin menu.
 
-It **never** sends your site URL, IP address, image URLs, or post content.
+## Privacy & Telemetry
+This plugin collects zero personal data by default. 
+If the site administrator explicitly opts in, a weekly anonymous payload is sent to a secure endpoint containing:
+- Core version identifiers (WordPress, PHP, Plugin)
+- Boolean flags for installed page builders (Elementor, Divi)
+- Aggregate media statistics (total uploaded, total scanned)
+
+No site URLs (a cryptographic hash is used instead), IP addresses, image URLs, or post content are ever transmitted. Opting out is available at any time within the plugin settings.
 
 ## Author
 **Sushant Kumar**
@@ -55,4 +76,4 @@ It **never** sends your site URL, IP address, image URLs, or post content.
 - LinkedIn: [https://linkedin.com/in/myselfsushaant](https://linkedin.com/in/myselfsushaant)
 
 ## License
-Licensed under GPL-2.0. This project is open source and may be modified and redistributed under the terms of the GNU General Public License v2.0 or later.
+This project is licensed under the GPL-2.0 License. See the [LICENSE](LICENSE) file for details.
